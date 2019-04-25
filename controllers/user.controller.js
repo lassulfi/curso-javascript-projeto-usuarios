@@ -17,16 +17,15 @@ class UserController {
 
     getValues(){
         let user = {};
-        let inputs = this.formEl.elements;
-        for(let i = 0; i < inputs.lenght; i++){
-            if(inputs[i].name == "gender"){
-                if(inputs[i].checked){
-                    user[inputs[i].name] = inputs[i].value;
+        [...this.formEl.elements].forEach(function(field, index){
+            if(field.name == "gender"){
+                if(field.checked){
+                    user[field.name] = field.value;
                 }
             } else {
-                user[inputs[i].name] = inputs[i].value;
+                user[field.name] = field.value;
             }
-        }        
+        });        
 
         return new User(
             user.name, 
