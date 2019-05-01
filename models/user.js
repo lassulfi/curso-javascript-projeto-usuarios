@@ -1,6 +1,7 @@
 class User {
     
     constructor(name, gender, birth, country, email, password, photo, admin){
+        this._id;
         this._name = name;
         this._gender = gender;
         this._birth = birth;
@@ -10,6 +11,10 @@ class User {
         this._photo = photo;
         this._admin = admin;
         this._register = new Date();
+    }
+
+    get id() {
+        return this._id;
     }
 
     get name() {
@@ -52,6 +57,10 @@ class User {
         return this._register;
     }
 
+    /**
+     * Load a user from a JSON object
+     * @param json
+     */
     loadFromJSON(json) {
         for(let name in json){
             switch(name){
@@ -60,8 +69,53 @@ class User {
                     break;
                 default:
                 this[name] = json[name];
-            }
-            
+            }            
         }
+    }
+
+    /**
+     * get all users form the the local storage
+     * 
+     * @return {User[]} users
+     */
+    static getUsersFromStorage() {
+        let users = [];
+        //if(sessionStorage.getItem("users")) users = JSON.parse(sessionStorage.getItem("users"));
+        if(localStorage.getItem("users")) users = JSON.parse(localStorage.getItem("users"));
+
+        return users;
+    }
+
+    /**
+     * Generate a new id for the user based on the application id
+     * 
+     * @returns {number} id;
+     */
+    generateId() {
+        if(!window.id) window.id = 0;
+        id++;
+        
+        return id;
+    }
+
+    save() {
+        let users = User.getUsersFromStorage();
+
+        if(this.id > 0) {
+            users.map(user => {
+                if(user._id === this._id){
+                    user = this;
+                }
+
+                return user;
+            })
+        } else {
+            this._id = this.generateId();
+            users.push(this);       
+        }
+
+        //sessionStorage.setItem("users", JSON.stringify(users));
+        localStorage.setItem("users", JSON.stringify(users));
+        
     }
 }

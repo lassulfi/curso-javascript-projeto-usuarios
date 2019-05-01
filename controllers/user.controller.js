@@ -43,6 +43,7 @@ class UserController {
 
                 let user = new User();
                 user.loadFromJSON(updatedUser);
+                user.save();
 
                 this.updateTableRow(tr, user);
                 this.updateCount();
@@ -98,7 +99,7 @@ class UserController {
             values.photo = "";
             this.getPhoto(this.formEl).then(content => {
                 values.photo = content;
-                this.insert(values);
+                values.save();
                 this.addLine(values);
                 this.formEl.reset();
                 btn.disabled = false;
@@ -201,20 +202,6 @@ class UserController {
         })
     }
     
-    /**
-     * Insert a user to the local storage 
-     * 
-     * @param {User} data 
-     */
-    insert(data){
-        let users = this.getUsersFromStorage();
-
-        users.push(data);
-
-        //sessionStorage.setItem("users", JSON.stringify(users));
-        localStorage.setItem("users", JSON.stringify(users));
-    }
-
     /**
      * Add a new line to the table row
      * 
