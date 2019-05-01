@@ -11,6 +11,9 @@ class UserController {
         this.selectAll();
     }
 
+    /**
+     * Submit edited values from the form
+     */
     onEdit(){
         document.querySelector("#box-user-update .btn-cancel").addEventListener("click", e => {
             this.showPanelCreate();
@@ -38,9 +41,10 @@ class UserController {
                     updatedUser._photo = content;
                 };
 
-                tr.dataset.user = JSON.stringify(updatedUser);
+                let user = new User();
+                user.loadFromJSON(updatedUser);
 
-                this.updateTableRow(tr, updatedUser);
+                this.updateTableRow(tr, user);
                 this.updateCount();
                 this.formUpdateEl.reset();
                 btn.disabled = false;
@@ -51,15 +55,23 @@ class UserController {
         });
     }
 
+    /**
+     * Update a table row
+     * 
+     * @param {*} tr 
+     * @param {User} values 
+     */
     updateTableRow(tr, values){
+        tr.dataset.user = JSON.stringify(values);
+
         tr.innerHTML = 
                 `<td>
-                    <img src="${values._photo}" alt="User Image" class="img-circle img-sm">
+                    <img src="${values.photo}" alt="User Image" class="img-circle img-sm">
                 </td>
-                <td>${values._name}</td>
-                <td>${values._email}</td>
-                <td>${(values._admin) ? "Sim": "Não"}</td>
-                <td>${Utils.dateFormat(values._register)}</td>
+                <td>${values.name}</td>
+                <td>${values.email}</td>
+                <td>${(values.admin) ? "Sim": "Não"}</td>
+                <td>${Utils.dateFormat(values.register)}</td>
                 <td>
                     <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
                     <button type="button" class="btn btn-danger btn-delete btn-xs btn-flat">Excluir</button>
@@ -68,6 +80,9 @@ class UserController {
             this.addEventsToTableRow(tr);
     }
 
+    /**
+     * Submit user data.
+     */
     onSubmit(){
         this.formEl.addEventListener("submit", event => {
             event.preventDefault();
@@ -93,6 +108,11 @@ class UserController {
         });
     }
 
+    /**
+     * get the user photo from the form
+     * 
+     * @param {*} form 
+     */
     getPhoto(form){
         return new Promise((resolve, reject) => {
             let fileReader = new FileReader();
@@ -115,6 +135,12 @@ class UserController {
         });
     }
 
+    /**
+     * Get all values from form create users and return an object user
+     * 
+     * @param {*} formEl
+     * @return {User} 
+     */
     getValues(formEl){
         let user = {};
         let isValid = true;
@@ -150,6 +176,11 @@ class UserController {
         );
     }
 
+    /**
+     * get all users form the the local storage
+     * 
+     * @return {User[]} users
+     */
     getUsersFromStorage() {
         let users = [];
         //if(sessionStorage.getItem("users")) users = JSON.parse(sessionStorage.getItem("users"));
@@ -158,6 +189,9 @@ class UserController {
         return users;
     }
 
+    /**
+     * get all users from the local storage and update de UI
+     */
     selectAll(){
         let users = this.getUsersFromStorage();
         users.forEach(obj => {
@@ -167,6 +201,11 @@ class UserController {
         })
     }
     
+    /**
+     * Insert a user to the local storage 
+     * 
+     * @param {User} data 
+     */
     insert(data){
         let users = this.getUsersFromStorage();
 
@@ -176,15 +215,24 @@ class UserController {
         localStorage.setItem("users", JSON.stringify(users));
     }
 
+    /**
+     * Add a new line to the table row
+     * 
+     * @param {User} dataUser 
+     */
     addLine(dataUser){
         let tr = document.createElement("tr");
-        tr.dataset.user = JSON.stringify(dataUser);
         this.updateTableRow(tr, dataUser);
         this.tableEl.appendChild(tr); 
         
         this.updateCount();
     }
 
+    /**
+     * Add events to buttons Edit and Delete of the table row.
+     * 
+     * @param {*} tr 
+     */
     addEventsToTableRow(tr){
         tr.querySelector(".btn-delete").addEventListener("click", e => {
             if(confirm("Deseja realmente excluir?")) tr.remove();
@@ -221,16 +269,25 @@ class UserController {
         });
     }
 
+    /**
+     * Display the create user panel
+     */
     showPanelCreate(){
         document.querySelector("#box-user-create").style.display = "block";
         document.querySelector("#box-user-update").style.display = "none";
     }
 
+    /**
+     * Display the upate user panel
+     */
     showPanelUpdate(){
         document.querySelector("#box-user-create").style.display = "none";
         document.querySelector("#box-user-update").style.display = "block";
     }
 
+    /**
+     * Update the counters (number of users and number of admins)
+     */
     updateCount(){
         let numberUsers = 0;
         let numberAdmin = 0;
