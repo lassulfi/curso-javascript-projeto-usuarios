@@ -178,23 +178,10 @@ class UserController {
     }
 
     /**
-     * get all users form the the local storage
-     * 
-     * @return {User[]} users
-     */
-    getUsersFromStorage() {
-        let users = [];
-        //if(sessionStorage.getItem("users")) users = JSON.parse(sessionStorage.getItem("users"));
-        if(localStorage.getItem("users")) users = JSON.parse(localStorage.getItem("users"));
-
-        return users;
-    }
-
-    /**
      * get all users from the local storage and update de UI
      */
     selectAll(){
-        let users = this.getUsersFromStorage();
+        let users = User.getUsersFromStorage();
         users.forEach(obj => {
             let user = new User();
             user.loadFromJSON(obj);
@@ -222,8 +209,13 @@ class UserController {
      */
     addEventsToTableRow(tr){
         tr.querySelector(".btn-delete").addEventListener("click", e => {
-            if(confirm("Deseja realmente excluir?")) tr.remove();
-            this.updateCount();
+            if(confirm("Deseja realmente excluir?")) {
+                let user = new User();
+                user.loadFromJSON(JSON.parse(tr.dataset.user));
+                user.remove();
+                tr.remove();
+                this.updateCount();
+            }
         });
 
         tr.querySelector(".btn-edit").addEventListener("click", e => {

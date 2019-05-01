@@ -89,15 +89,22 @@ class User {
     /**
      * Generate a new id for the user based on the application id
      * 
-     * @returns {number} id;
+     * @returns {number} usersId;
      */
     generateId() {
-        if(!window.id) window.id = 0;
-        id++;
+        let usersId = parseInt(localStorage.getItem("userId"));
+        if(!usersId > 0) usersId = 0;
         
-        return id;
+        usersId++;
+
+        localStorage.setItem("userId", usersId);
+        
+        return usersId;
     }
 
+    /**
+     * Saves an instance of the user in the localStorage
+     */
     save() {
         let users = User.getUsersFromStorage();
 
@@ -116,6 +123,15 @@ class User {
 
         //sessionStorage.setItem("users", JSON.stringify(users));
         localStorage.setItem("users", JSON.stringify(users));
-        
+    }
+
+    remove() {
+        let users = User.getUsersFromStorage();
+        users.forEach((user, index) => {
+            if(this._id == user._id) {
+                users.splice(index, 1);
+            }
+        });
+        localStorage.setItem("users", JSON.stringify(users));
     }
 }
