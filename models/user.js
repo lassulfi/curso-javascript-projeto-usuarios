@@ -103,12 +103,12 @@ class User {
 
         if(this.id > 0) {
             users.map(user => {
-                if(user._id === this._id){
-                    user = this;
+                if(user._id == this._id){
+                    Object.assign(user, this);
                 }
 
                 return user;
-            })
+            });
         } else {
             this._id = this.generateId();
             users.push(this);       
